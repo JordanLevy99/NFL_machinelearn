@@ -1,3 +1,6 @@
+'''
+Username: data_ff
+'''
 import csv
 import errno
 import os
@@ -74,8 +77,8 @@ def main():
         'http://www.fftoday.com/oss8/users/login.php?ce=0&group=39&url=www.fftoday.com/members/%3fr=playerproj')  # Username: data_ff   Password: Benjiwalk2
     print('30 seconds to login')
     time.sleep(30)
-
-    test_data_downloader(driver, 2018)
+    year = 2019
+    test_data_downloader(driver, year)
     print('All Done')
     driver.close()
     try:

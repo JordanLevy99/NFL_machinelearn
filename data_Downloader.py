@@ -16,15 +16,15 @@ import time
 driver = webdriver.Chrome('/Users/jordanlevy/Downloads/chromedriver')
 script_dir = os.path.dirname(__file__)
 
-def download_file(driver, end_yr):
+def download_file(driver, start_yr, end_yr):
     pos = {10:['QB', 12], 20:['RB', 10], 30:['WR', 10], 40:['TE', 7]}   # dictionary for pos_id relating to position name and number of features
-    master_filename = 'Total_Data/{}-{}'.format('2010', str(end_yr))
+    master_filename = 'Total_Data/{}-{}'.format(str(start_yr), str(end_yr))
     try:
         os.makedirs(master_filename)    #checks if directory already exists
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
-    for yr in range(2010, end_yr+1):
+    for yr in range(start_yr, end_yr+1):
         print(yr)
         for id in range(10,50,10):
             pos_name = pos[id][0]
@@ -62,7 +62,7 @@ def download_file(driver, end_yr):
                 master_file_mode = 'a'
                 if page == 0:
                     file_mode = 'w'
-                    if yr == 2010:
+                    if yr == start_yr:
                         master_file_mode = 'w'
                 with open(master_filename+'/{}_projected.csv'.format(pos_name), master_file_mode, newline='') as m:
                     master_writer = csv.writer(m)
@@ -78,7 +78,7 @@ def download_file(driver, end_yr):
 
 def main():
     driver = webdriver.Chrome('/Users/jordanlevy/Downloads/chromedriver')
-    download_file(driver, 2018)
+    download_file(driver, 2015, 2019)
     print('All Done')
     driver.close()
 

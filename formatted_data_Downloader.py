@@ -80,7 +80,7 @@ def download_file(driver, start_yr, end_yr):
 
 def main():
     driver = webdriver.Chrome('/Users/jordanlevy/Downloads/chromedriver')
-    download_file(driver, 2018)
+    download_file(driver, 2015, 2019)
     print('All Done')
     driver.close()
 
