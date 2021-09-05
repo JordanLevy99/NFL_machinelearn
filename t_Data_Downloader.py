@@ -74,7 +74,7 @@ def test_data_downloader(driver, yr):
 def main():
     driver = webdriver.Chrome('/Users/jordanlevy/Downloads/chromedriver')
     driver.get(
-        'http://www.fftoday.com/oss8/users/login.php?ce=0&group=39&url=www.fftoday.com/members/%3fr=playerproj')  # Username: data_ff   Password: Benjiwalk2
+        'http://www.fftoday.com/oss8/users/login.php?ce=0&group=39&url=www.fftoday.com/members/%3fr=playerproj') 
     print('30 seconds to login')
     time.sleep(30)
     year = 2019
