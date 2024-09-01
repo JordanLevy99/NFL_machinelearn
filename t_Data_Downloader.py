@@ -14,7 +14,7 @@ from selenium import webdriver
 script_dir = os.path.dirname(__file__)
 
 
-def test_data_downloader(driver, yr):
+def t_data_downloader(driver, yr):
     pos = {10: ['QB', 12, 13, 2], 20: ['RB', 10, 12, 3], 30: ['WR', 10, 12, 4],
            40: ['TE', 7, 9, 3]}  # dictionary for pos_id relating to position name and number of stats
     for id in range(10, 50,
@@ -32,28 +32,34 @@ def test_data_downloader(driver, yr):
                 id, yr, page)  # only projected data is downloaded for test data since there is not actual data yet
             pos_length = pos[id][1]
             # url = 'http://www.fftoday.com/stats/playerstats.php?Season={}&GameWeek=&PosID={}&LeagueID=189999&cur_page={}'.format(yr, id, page)
-            # time.sleep(5)
+            time.sleep(5)
             url_got = False
-            while not url_got:
+            tries=0
+            while not url_got or tries <20:
                 try:
                     driver.get(url)
                     url_got = True
+                    tries=99
                 except:
+#                     ti
                     print('Reloading...')
+                    tries+=1
                     pass
-
+            if tries == 20: return
             # url = 'http://www.fftoday.com/rankings/playerproj.php?&PosID={}&Season={}&LeagueID=189999'.format(id, yr)
             # driver.get(url)
             print(pos_name)
             print('Page #', page + 1)
             # print('Got url')
             soup = BeautifulSoup(driver.page_source, 'html5lib').find('table', {"width": "100%", "cellpadding": "2"})
+            # print(soup.findAll('td', {"class": "smallbody"}))
             playerdata = ','.join(
-                [data.text.strip(' ').replace(',', '') for data in soup.findAll('td', {"class": "sort1"})]).replace(
-                '\xa0,\xa0', '').replace('\xa0', '').split(',')
+                [data.text.strip(' ').replace(',', '') for data in soup.findAll('td', {"class": "smallbody"})]).replace(
+                '\xa0,\xa0', '').replace('\xa0', '').split(',') # "class":"sort1"
             playerdata = list(filter(lambda a: a != '', playerdata))
             playerdata = [playerdata[i:i + pos_length] for i in
                           range(len(playerdata))[::pos_length]]  # creates nested lists for each player's statline;
+            # print(playerdata)
             # length of statline changes for each position and whether it's actual or projected data
             for i in range(len(playerdata)):  # this nested for loop converts strings to floats when the data is a float
                 playerdata[i].insert(2, int(yr))  # insert year into the third element of each players stat line
@@ -72,13 +78,14 @@ def test_data_downloader(driver, yr):
 
 
 def main():
-    driver = webdriver.Chrome('/Users/jordanlevy/Downloads/chromedriver')
+    chrome_driver_path = '/Users/jordanlevy/Documents/GitHub/NFL_machinelearn/chromedriver'
+    driver = webdriver.Chrome(chrome_driver_path)
     driver.get(
         'http://www.fftoday.com/oss8/users/login.php?ce=0&group=39&url=www.fftoday.com/members/%3fr=playerproj') 
-    print('30 seconds to login')
-    time.sleep(30)
-    year = 2019
-    test_data_downloader(driver, year)
+    input('press enter to continue')
+    # time.sleep(30)
+    for year in range(2017, 2023):
+        t_data_downloader(driver, year)
     print('All Done')
     driver.close()
     try:

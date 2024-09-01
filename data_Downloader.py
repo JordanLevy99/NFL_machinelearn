@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 import csv
 import time
 
-driver = webdriver.Chrome('/Users/jordanlevy/Downloads/chromedriver')
+# driver = webdriver.Chrome('/Users/jordanlevy/Downloads/chromedriver')
 script_dir = os.path.dirname(__file__)
 
 def download_file(driver, start_yr, end_yr):
@@ -77,8 +77,9 @@ def download_file(driver, start_yr, end_yr):
 
 
 def main():
-    driver = webdriver.Chrome('/Users/jordanlevy/Downloads/chromedriver')
-    download_file(driver, 2015, 2019)
+    chrome_driver_path = '/Users/jordanlevy/Documents/GitHub/NFL_machinelearn/chromedriver_mac64/chromedriver'
+    driver = webdriver.Chrome(chrome_driver_path)
+    download_file(driver, 2022, 2023)
     print('All Done')
     driver.close()
 

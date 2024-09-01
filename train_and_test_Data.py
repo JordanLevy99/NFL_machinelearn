@@ -8,7 +8,7 @@ import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 
 import math
-
+import os
 # import csv
 # import os.path
 # import os, errno
@@ -28,16 +28,17 @@ def dataframe_creator(pos, datatype, train=True, start_yr=2010, end_yr=2019):
     Creates a pandas dataframe for specified csv file in the 2010 to 2018 database with a proper header and some minor adjustments
     '''
     if train:
-        filename = 'Total_Data/2010-2018/{}_{}.csv'.format(pos,
+        filename = 'Total_Data/{}-{}/{}_{}.csv'.format(start_yr, end_yr, pos,
                                                            datatype)  # the filename of the specified position plus actual vs projected data
     else:
-        filename = 'Total_Data/Test_Data/{}/{}_projected.csv'.format(start_yr,
+        filename = 'Total_Data/Test_Data/{}/{}_projected.csv'.format(end_yr,
                                                                      pos)  # the filename of the specified position with projected data for the current year
 
     total_lines = []  # the outer list to be appended to
     with open(filename, 'r') as f:  # opens specified file as f
         column_names = positions[pos]  # used to name columns for the specified file
         for line in f:  # iterates through each line of file f
+            #if not train: print(line)
             line_lst = line.split(',')  # splits each line into a list
             # print(line_lst)
             if train == False:  # if using testing data, set games played to 16
@@ -68,11 +69,13 @@ def dataframe_creator(pos, datatype, train=True, start_yr=2010, end_yr=2019):
                 # if pos == 'TE':
                 #   line_lst = line_lst[0:4]+line_lst[5:]   # Gets rid of receiving targets from actual data, an unnecessary statistic
 
-            # print(line_lst)
+            # if not train: print(line_lst)
             total_lines.append(line_lst)  # append updated line/list to parent list
         # with open('placeholder.csv', 'w') as f2:
         #   print(f.)
     # print(pd.DataFrame(total_lines, columns= positions[pos]))   # convert parent list to pandas data frame and print
+    #if not train:
+        #print(total_lines)
     return pd.DataFrame(total_lines,
                         columns=column_names)  # returns a pandas dataframe with the proper columns as given by the positions dictionary @ line __
 
@@ -82,10 +85,16 @@ def merging_proj_with_actual(pos, start_yr=2010, end_yr=2018):
     pos_actual = dataframe_creator(pos, 'actual', True, start_yr, end_yr)
 
     pos_train = pos_proj.merge(pos_actual, how='inner', left_on=['Name', 'Yr'], right_on=['Name', 'Yr'])
-    drop_list = ['Bye'] + [i for i in pos_train.columns if 'y' in i and i != 'Proj FPts_y']
+    drop_list = [i for i in pos_train.columns if 'y' in i and i != 'Proj FPts_y']
+    drop_list_bye = drop_list + ['Bye']
     # gp = qb_train.pop('GP')
     # print(gp.values)
-    pos_train = pos_train.drop(drop_list, axis=1)  # .insert(2, column='GP', value=gp)
+    print(pos_train.columns)
+    try:
+        pos_train = pos_train.drop(drop_list_bye, axis=1)  # .insert(2, column='GP', value=gp)
+    except KeyError:
+        pos_train = pos_train.drop(drop_list, axis=1)  # .insert(2, column='GP', value=gp)
+
     cols = pos_train.columns.tolist()  # this turns the columns of the training data into a list, so that I could rearrange the order of the columns
     # print training data here to see what I changed
     cols2 = cols[:3]
@@ -123,6 +132,7 @@ def gp_stats_adjuster(training_data):
 
 
 def standardize(data):
+    #print('data:',data)
     mean_data = data.groupby('Yr').transform(np.mean)
     std_data = data.groupby('Yr').transform(np.std)
     scale = ((data - mean_data) / std_data).drop(['Name', 'Team', 'Yr'], axis=1).fillna(0)
@@ -132,25 +142,31 @@ def standardize(data):
     return scale
 
 
-def machine_learning(training_data, testing_data, pos, year):
-    random = len(positions[pos])
+def machine_learning(training_data, testing_data, pos, year, n):
+    # random = len(positions[pos])
     hidden = int(95 * len(positions[pos]))
     if pos == 'TE':
         hidden *= 0.7
-    mlp = MLPRegressor()#validation_fraction=0.25)
-    #mlp = MLPRegressor(hidden_layer_sizes=int(hidden), activation= 'relu', alpha = 0.001, max_iter= int(hidden/3.5),
-    #                   random_state= random)  # can change regression model, look on scikit learn site... eg. linear_model.Ridge(alpha = .5) after import
-    # scaler = StandardScaler()
+    #mlp = MLPRegressor()#validation_fraction=0.25)
+    mlp = MLPRegressor(hidden_layer_sizes=int(100), activation= 'relu', alpha = 0.001, max_iter= 300,
+                       )  # can change regression model, look on scikit learn site... eg. linear_model.Ridge(alpha = .5) after import
+    sts = StandardScaler()
     # mean_data = training_data.groupby('Yr').transform(np.mean)
     # std_data = training_data.groupby('Yr').transform(np.std)
 
     '''ml_train_data_x = training_data.loc[:, 'Yr':'Proj FPts'].values
     ml_train_data_y = training_data.loc[:, 'Act FPts'].values
     ml_test_data = testing_data.loc[:, 'Yr': 'Proj FPts'].values'''
-    stand_data = standardize(training_data)
-    ml_train_data_x = stand_data.drop(['Act FPts'], axis=1)  # .values
-    ml_train_data_y = stand_data['Act FPts']  # .values
-    ml_test_data = standardize(testing_data)  # .values
+    drop_cols = ['Name', 'Team', 'Yr']
+    train_filt = training_data.drop(drop_cols+['Proj FPts'], axis=1)
+    sts.fit(train_filt)
+    # stand_data = pd.DataFrame(data=sts.transform(train_filt), columns=train_filt.columns)
+    ml_train_data_x = sts.transform(train_filt)  # .values
+    ml_train_data_y = training_data['Act FPts']  # .values
+    test_filt = testing_data.drop(drop_cols, axis=1)
+    print(train_filt.columns)
+    print(test_filt.columns)
+    ml_test_data = pd.DataFrame(data=sts.transform(test_filt), columns=test_filt.columns)  # .values
 
     # ml_train_data_x = scaler.fit_transform(ml_train_data_x)
     # ml_test_data = scaler.transform(ml_test_data)
@@ -159,7 +175,7 @@ def machine_learning(training_data, testing_data, pos, year):
     mlp.fit(ml_train_data_x, ml_train_data_y)
     ml_predictions = mlp.predict(ml_test_data)
     playernames = testing_data.loc[:, 'Name'].values
-    predicted = ml_test_data['Proj FPts'].values
+    predicted = test_filt['Proj FPts'].values
 
     '''pos_stats = {'QB':'Pass Yds', 'RB':'Rush Yds', 'WR':'Rec Yds', 'TE':'Rec Yds'}
 
@@ -174,16 +190,18 @@ def machine_learning(training_data, testing_data, pos, year):
     pd.set_option('display.max_rows', 1000)
     players = pd.DataFrame(np.column_stack([playernames, predicted, ml_predictions]),
                            columns=['Player', 'Projection', 'My Computed Score'])
-    print(players)
-    filename = 'ML_projections/{}_{}.csv'.format(pos, year)
-    players.to_csv(filename)
+    # print(players)
+    if os.path.isdir(f'ML_projections/{year}') == False: os.mkdir(f'ML_projections/{year}')
+    filename = 'ML_projections/{}/{}_{}_{}.csv'.format(year, pos, year, n)
+    players.to_csv(filename, index=False)
     global i
 
-    plt.figure(i)
-    plt.xlabel('Projected Scores')
-    plt.ylabel('Computed Scores')
-    plt.scatter(players['Projection'], players['My Computed Score'])
-    plt.show()
+    # plt.figure(i)
+    # plt.title(f'{pos} projections 2020')
+    # plt.xlabel('Projected Scores')
+    # plt.ylabel('Computed Scores')
+    # plt.scatter(players['Projection'], players['My Computed Score'])
+    # plt.show()
     i += 1
     return players
 
@@ -215,23 +233,27 @@ i = 1
 
 
 def main():
-    for position in positions.keys():  # runs through the functions once per each position
-        # np.random.seed(len(positions[position]))
-        ### TODO Change the following 2 lines each year
-        start_yr = 2015
-        end_yr = 2019
-        training_data = gp_stats_adjuster(merging_proj_with_actual(position, start_yr, end_yr))
-        testing_data = dataframe_creator(position, 'projected', False, end_yr)
-        # print('Training Data for {}'.format(position))
-        # print(training_data)
-        # print(training_data.loc[:, 'Yr':'Proj FPts'].values)
+    for n in range(26):
+        for position in positions.keys():  # runs through the functions once per each position
+            # np.random.seed(len(positions[position]))
+            ### TODO Change the following 2 lines each year
+            start_yr = 2018
+            end_yr = 2023
+            training_data = gp_stats_adjuster(merging_proj_with_actual(position, start_yr, end_yr))
+            #print(position)
+            # print(training_data)
+            testing_data = dataframe_creator(position, 'projected', False, start_yr=start_yr, end_yr=end_yr)
+            # print(testing_data)
+            # print('Training Data for {}'.format(position))
+            # print(training_data)
+            # print(training_data.loc[:, 'Yr':'Proj FPts'].values)
 
-        # print('Testing Data for {}'.format(position))
-        # print(testing_data)
-        # print(training_data.loc[:, 4:15].values)
-        # print(training_data)
-        machine_learning(training_data, testing_data, position, end_yr)
-        # data_vis(training_data, testing_data, position)
-
+            # print('Testing Data for {}'.format(position))
+            # print(testing_data)
+            # print(training_data.loc[:, 4:15].values)
+            # print(training_data)
+            machine_learning(training_data, testing_data, position, end_yr, n)
+            # data_vis(training_data, testing_data, position)
+            #print(testing_data)
 
 main()

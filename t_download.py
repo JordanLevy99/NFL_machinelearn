@@ -56,7 +56,7 @@ def download_file(driver, start_yr, end_yr):
                     else:
                         pos_length = pos[id][1]
                     # url = 'http://www.fftoday.com/stats/playerstats.php?Season={}&GameWeek=&PosID={}&LeagueID=189999&cur_page={}'.format(yr, id, page)
-                    time.sleep(3)
+                    # time.sleep(5)
                     url_got = False
                     while not url_got:
                         try:
@@ -73,28 +73,15 @@ def download_file(driver, start_yr, end_yr):
                     # print('Got url')
                     soup = BeautifulSoup(driver.page_source, 'html5lib').find('table',
                                                                               {"width": "100%", "cellpadding": "2"})
-                    if soup is None:
-                        print(driver.page_source)
-                        print(url)
-                    #player_df = pd.read_html(str(soup))[0] # .find('table', {'class':'tableclmhdr'})))
+                    player_df = pd.read_html(str(soup))[0] # .find('table', {'class':'tableclmhdr'})))
+
+                    player_df.to_csv(f'{master_filename}/pd_{pos_name}_{websites[url]}_{yr}.csv', index=False)
                     #print(player_df)
                     #print(soup)
-                    if websites[url] == 'projected':
-                        data_class = 'smallbody'
-                    elif websites[url] == 'actual':
-                        data_class = 'sort1'
+                    '''
                     playerdata = ','.join([data.text.strip(' ').replace(',', '') for data in
-                                           soup.findAll('td', {"class": data_class})]).replace(
+                                           soup.findAll('td', {"class": "sort1"})]).replace(
                         '\xa0,\xa0', '').replace('\xa0', '').split(',')
-                    if len(playerdata) == 1 and yr != end_yr and page == 0:
-                        print('data not found')
-                        print(url)
-                        print(soup)
-                        #driver.quit()
-                        return 'done'
-                    elif len(playerdata) == 1:
-                        print(f'yr is {yr}, no data found for page: {page+1}')
-                        print(playerdata)
                     playerdata = list(filter(lambda a: a != '', playerdata))
                     playerdata = [playerdata[i:i + pos_length] for i in range(len(playerdata))[
                                                                         ::pos_length]]  # creates nested lists for each player's statline;
@@ -138,21 +125,20 @@ def download_file(driver, start_yr, end_yr):
 
                     # print((-1*(yr-end_yr+1))/(end_yr+1-yr))
                     # time.sleep(5)
+                    '''
 
-
-# driver = webdriver.Chrome('/Users/jordanlevy/Downloads/chromedriver')
+driver = webdriver.Chrome('/Users/jordanlevy/Downloads/chromedriver')
 
 
 def main():
-    chrome_driver_path = '/Users/jordanlevy/Documents/GitHub/NFL_machinelearn/chromedriver_mac64/chromedriver'
-    driver = webdriver.Chrome(chrome_driver_path)
+    driver = webdriver.Chrome('/Users/jordanlevy/Downloads/chromedriver')
     driver.get('http://www.fftoday.com/oss8/users/login.php?ce=0&group=39&url=www.fftoday.com/members/%3fr=playerproj')
     # print('30 seconds to login')
     input('Press enter to continue')
     # time.sleep(30)
     ### TODO Change the following two lines each year
-    start_yr = 2018
-    end_yr = 2023
+    start_yr = 2014
+    end_yr = 2020
     download_file(driver, start_yr, end_yr)
     print('All Done')
     driver.close()
