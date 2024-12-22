@@ -1,0 +1,24 @@
+# Build and distribution
+build/
+dist/
+*.egg-info/
+
+# Data and model files
+# data/
+models/
+*.joblib
+
+# Virtual environments
+venv/
+env/
+.env
+
+# Cache
+__pycache__/
+*.py[cod]
+
+# Temporary files
+temp_*_model.joblib
+
+# Logs
+logs/ 

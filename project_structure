@@ -1,0 +1,19 @@
+nfl_machinelearn/
+├── nfl_machinelearn/
+│   ├── __init__.py
+│   ├── train.py
+│   ├── data/
+│   │   ├── __init__.py
+│   │   ├── downloaders/
+│   │   │   ├── __init__.py
+│   │   │   └── base_downloader.py
+│   │   └── data_manager.py
+│   └── ml/
+│       ├── __init__.py
+│       └── models/
+│           ├── __init__.py
+│           └── nfl_predictor.py
+├── setup.py
+├── setup.sh
+├── requirements.txt
+└── README.md

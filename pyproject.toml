@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "NFL_machinelearn"
+version = "0.1"
+description = "NFL Player Statistics Machine Learning Project"
+authors = [{name = "Jordan Levy"}]
+requires-python = ">=3.8"
+dependencies = [
+    "selenium>=4.10.0",
+    "beautifulsoup4>=4.12.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "scikit-learn>=1.3.0",
+    "joblib>=1.3.0",
+    "html5lib>=1.1",
+    "lxml>=4.9.0",
+    "pathlib>=1.0.1",
+    "typing>=3.7.4",
+    "python-dateutil>=2.8.2",
+    "requests>=2.31.0",
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=22.0.0",
+    "isort>=5.0.0",
+    "flake8>=4.0.0",
+] 
