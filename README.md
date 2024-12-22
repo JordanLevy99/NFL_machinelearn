@@ -4,7 +4,7 @@ A machine learning system that predicts NFL player performance using historical 
 
 ## Features
 
-- Automated data collection from FFToday
+- Automated data collection from FFToday with ad blocking
 - Position-specific neural network models
 - Historical data analysis and processing
 - Comprehensive error handling and logging
@@ -14,22 +14,26 @@ A machine learning system that predicts NFL player performance using historical 
 ## Project Structure
 
 ```
-nfl_ml/
-├── config/
-│   └── config.py         # Configuration settings
-├── src/
+NFL_machinelearn/
+├── NFL_machinelearn/
+│   ├── config/
+│   │   ├── __init__.py
+│   │   └── config.py      # Configuration settings
 │   ├── data/
-│   │   ├── downloaders/  # Data downloading modules
+│   │   ├── downloaders/   # Data downloading modules
 │   │   └── data_manager.py
 │   ├── ml/
-│   │   └── models/      # ML model definitions
-│   └── train.py         # Main training script
+│   │   └── models/       # ML model definitions
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   └── browser_setup.py
+│   └── train.py          # Main training script
 ├── data/
-│   ├── raw/             # Raw downloaded data
-│   ├── processed/       # Processed training data
+│   ├── raw/              # Raw downloaded data
+│   ├── processed/        # Processed training data
 │   └── models/          # Trained models
 ├── setup.sh             # Automated setup script
-├── requirements.txt
+├── pyproject.toml       # Project dependencies and metadata
 └── README.md
 ```
 
@@ -68,6 +72,13 @@ nfl_ml/
    source venv/bin/activate
    ```
 
+4. **Configure Environment Variables**
+   Create a `.env` file in the project root with the following variables:
+   ```
+   FFTODAY_USERNAME=your_username
+   FFTODAY_PASSWORD=your_password
+   ```
+
 ### Option 2: Manual Setup (Windows/Alternative)
 
 1. **Clone the Repository**
@@ -89,7 +100,7 @@ nfl_ml/
 
 3. **Install Dependencies**
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
    ```
 
 4. **Download ChromeDriver**
@@ -120,26 +131,23 @@ nfl_ml/
      }
      ```
 
-6. **Create Required Directories**
-   ```bash
-   mkdir -p data/raw data/processed data/models
-   ```
+</edit>
 
 ## Usage
 
 1. **Download and Train Models**
    ```bash
    # Train models for all positions
-   python src/train.py
+   python NFL_machinelearn/train.py
 
    # Train specific positions
-   python src/train.py --positions QB RB
+   python NFL_machinelearn/train.py --positions QB RB
 
    # Force new data download
-   python src/train.py --force-download
+   python NFL_machinelearn/train.py --force-download
 
    # Specify year range
-   python src/train.py --start-year 2018 --end-year 2023
+   python NFL_machinelearn/train.py --start-year 2018 --end-year 2023
    ```
 
 2. **Monitor Training**
@@ -172,14 +180,14 @@ All models use:
 1. **ChromeDriver Issues**
    - Ensure Chrome browser and ChromeDriver versions match
    - Verify ChromeDriver is executable (`chmod +x` on Unix systems)
-   - Check the path in config.py is correct
+   - Check the path in your `.env` file is correct
    - For automated setup issues, check Chrome version matches downloaded driver
 
 2. **Data Download Problems**
    - Check internet connection
    - Verify FFToday is accessible
-   - Ensure proper login credentials if required
    - Check storage permissions in data directory
+   - Ensure uBlock Origin extension is properly loaded
 
 3. **Training Issues**
    - Verify sufficient data is available
@@ -209,3 +217,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - FFToday for providing the data source
 - scikit-learn for machine learning tools
 - Selenium and BeautifulSoup for web scraping capabilities
+- uBlock Origin for ad blocking functionality

@@ -149,33 +149,58 @@ def main():
     setup_environment()
     logger = logging.getLogger(__name__)
     
-    # Initialize Chrome driver with adblock
-    driver = create_chrome_driver(args.chrome_driver)
+    # Initialize data manager
+    data_manager = DataManager(Path('data'))
+    
+    # Check if we need to download any data
+    need_download = args.force_download
+    if not need_download:
+        for position in args.positions:
+            if not data_manager.check_data_exists(args.start_year, args.end_year, position):
+                need_download = True
+                logger.info(f"Missing data for {position} between {args.start_year}-{args.end_year}")
+                break
+    
+    driver = None
+    downloader = None
     
     try:
-        # Initialize downloader
-        downloader = FFTodayDownloader(driver)
-        
-        # Replace manual login with automatic login
-        login_to_fftoday(driver)
+        if need_download:
+            logger.info("Initializing Chrome driver for data download...")
+            driver = create_chrome_driver(args.chrome_driver)
+            downloader = FFTodayDownloader(driver)
+            login_to_fftoday(driver)
+        else:
+            logger.info("All required data exists. Skipping data download.")
         
         # Train models for each position
         for position in args.positions:
             try:
                 logger.info(f"Starting training process for {position}")
-                train_position_model(
-                    position,
-                    downloader,
-                    args.start_year,
-                    args.end_year,
-                    args.force_download
-                )
+                if need_download:
+                    train_position_model(
+                        position,
+                        downloader,
+                        args.start_year,
+                        args.end_year,
+                        args.force_download
+                    )
+                else:
+                    # Modified version of train_position_model that doesn't require downloader
+                    logger.info(f"Processing existing data for {position}")
+                    training_data = data_manager.load_training_data(args.start_year, args.end_year, position)
+                    training_data = gp_stats_adjuster(training_data)
+                    testing_data = data_manager.load_position_data(args.end_year, position, "projected")
+                    logger.info(f"Training model for {position}")
+                    machine_learning(training_data, testing_data, position, args.end_year, 0)
+                    logger.info(f"Completed training for {position}")
             except Exception as e:
                 logger.error(f"Error training {position} model: {str(e)}")
                 continue
                 
     finally:
-        driver.quit()
+        if driver:
+            driver.quit()
 
 if __name__ == '__main__':
     main() 
