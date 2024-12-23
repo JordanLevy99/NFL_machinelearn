@@ -12,13 +12,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
 
 from NFL_machinelearn.data.downloaders.ff_today_downloader import FFTodayDownloader
-from NFL_machinelearn.ml.models.train_model import (
-    merging_proj_with_actual,
-    gp_stats_adjuster,
-    machine_learning,
-    dataframe_creator
-)
+from NFL_machinelearn.ml.models.train_model import machine_learning
 from NFL_machinelearn.data.data_manager import DataManager
+from NFL_machinelearn.data.processors import DataProcessor
 from NFL_machinelearn.utils.browser_setup import create_chrome_driver
 
 def setup_logging() -> None:
@@ -81,7 +77,9 @@ def login_to_fftoday(driver: webdriver.Chrome) -> None:
 
 def train_position_model(
     position: str,
-    downloader: FFTodayDownloader,
+    downloader: Optional[FFTodayDownloader],
+    data_manager: DataManager,
+    data_processor: DataProcessor,
     start_year: int,
     end_year: int,
     force_download: bool = False
@@ -90,7 +88,9 @@ def train_position_model(
     
     Args:
         position: Player position (QB, RB, WR, TE)
-        downloader: FFToday downloader instance
+        downloader: FFToday downloader instance (optional)
+        data_manager: Data manager instance
+        data_processor: Data processor instance
         start_year: Start year for training data
         end_year: End year for training data
         force_download: Whether to force data download even if it exists
@@ -98,24 +98,17 @@ def train_position_model(
     logger = logging.getLogger(__name__)
     
     try:
-        # Set up data directories
-        data_dir = Path('data')
-        data_manager = DataManager(data_dir)
-        
         # Download data if forced or if data doesn't exist
-        if force_download or not data_manager.check_data_exists(start_year, end_year, position):
+        if downloader and (force_download or not data_manager.check_data_exists(start_year, end_year, position)):
             logger.info(f"Downloading data for {position}")
             # Download historical data
             downloader.download_year_range([position], start_year, end_year, data_manager.raw_data_dir)
             # Download test data 
             downloader.download_position_data(position, end_year, data_manager.raw_data_dir / str(end_year))
         
-        # Load and process data
+        # Process training data
         logger.info(f"Processing data for {position}")
-        training_data = data_manager.load_training_data(start_year, end_year, position)
-        
-        # Adjust for games played
-        training_data = gp_stats_adjuster(training_data)
+        training_data = data_processor.process_training_data(position, start_year, end_year)
         
         # Get test data for current year
         testing_data = data_manager.load_position_data(end_year, position, "projected")
@@ -149,8 +142,10 @@ def main():
     setup_environment()
     logger = logging.getLogger(__name__)
     
-    # Initialize data manager
-    data_manager = DataManager(Path('data'))
+    # Initialize managers and processors
+    data_dir = Path('data')
+    data_manager = DataManager(data_dir)
+    data_processor = DataProcessor(data_dir / 'raw')
     
     # Check if we need to download any data
     need_download = args.force_download
@@ -177,23 +172,15 @@ def main():
         for position in args.positions:
             try:
                 logger.info(f"Starting training process for {position}")
-                if need_download:
-                    train_position_model(
-                        position,
-                        downloader,
-                        args.start_year,
-                        args.end_year,
-                        args.force_download
-                    )
-                else:
-                    # Modified version of train_position_model that doesn't require downloader
-                    logger.info(f"Processing existing data for {position}")
-                    training_data = data_manager.load_training_data(args.start_year, args.end_year, position)
-                    training_data = gp_stats_adjuster(training_data)
-                    testing_data = data_manager.load_position_data(args.end_year, position, "projected")
-                    logger.info(f"Training model for {position}")
-                    machine_learning(training_data, testing_data, position, args.end_year, 0)
-                    logger.info(f"Completed training for {position}")
+                train_position_model(
+                    position,
+                    downloader,
+                    data_manager,
+                    data_processor,
+                    args.start_year,
+                    args.end_year,
+                    args.force_download
+                )
             except Exception as e:
                 logger.error(f"Error training {position} model: {str(e)}")
                 continue
