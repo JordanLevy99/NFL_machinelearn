@@ -10,17 +10,20 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
+import pandas as pd
+import json
 
 from NFL_machinelearn.data.downloaders.ff_today_downloader import FFTodayDownloader
-from NFL_machinelearn.ml.models.train_model import machine_learning
+from NFL_machinelearn.ml.models.nfl_predictor import NFLPredictor, ModelConfig
 from NFL_machinelearn.data.data_manager import DataManager
 from NFL_machinelearn.data.processors import DataProcessor
 from NFL_machinelearn.utils.browser_setup import create_chrome_driver
 
-def setup_logging() -> None:
+def setup_logging(log_level: str) -> None:
     """Configure logging for the training process."""
+    numeric_level = getattr(logging, log_level.upper(), logging.INFO)
     logging.basicConfig(
-        level=logging.INFO,
+        level=numeric_level,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
 
@@ -98,13 +101,23 @@ def train_position_model(
     logger = logging.getLogger(__name__)
     
     try:
-        # Download data if forced or if data doesn't exist
-        if downloader and (force_download or not data_manager.check_data_exists(start_year, end_year, position)):
+        # Check which files need to be downloaded
+        missing_files = data_manager.check_data_exists(start_year, end_year, position)
+        
+        if downloader and (force_download or missing_files):
             logger.info(f"Downloading data for {position}")
-            # Download historical data
-            downloader.download_year_range([position], start_year, end_year, data_manager.raw_data_dir)
-            # Download test data 
-            downloader.download_position_data(position, end_year, data_manager.raw_data_dir / str(end_year))
+            if force_download:
+                # Download all data if force download is requested
+                downloader.download_year_range([position], start_year, end_year, data_manager.raw_data_dir)
+            else:
+                # Download only missing files
+                for year, missing_types in missing_files.items():
+                    logger.info(f"Downloading {position} {year} data: {', '.join(missing_types)}")
+                    for data_type in missing_types:
+                        if data_type == 'projected':
+                            downloader.download_position_data(position, year, data_manager.raw_data_dir / str(year))
+                        else:  # actual
+                            downloader.download_year_range([position], year, year, data_manager.raw_data_dir)
         
         # Process training data
         logger.info(f"Processing data for {position}")
@@ -115,7 +128,83 @@ def train_position_model(
         
         # Train model
         logger.info(f"Training model for {position}")
-        machine_learning(training_data, testing_data, position, end_year, 0)
+        logger.debug(f"Columns of training data: {training_data.columns.tolist()}")
+        logger.debug(f"Columns of testing data: {testing_data.columns.tolist()}")
+        
+        # Drop year and GP columns from training data as they shouldn't be used for prediction
+        columns_to_drop = ['Yr', 'GP', 'GP_projected', 'GP_actual']
+        training_data = training_data.drop(columns=[col for col in columns_to_drop if col in training_data.columns])
+        
+        # Create model configuration
+        model_config = ModelConfig(
+            hidden_layers=[100],  # Single hidden layer with 100 neurons
+            activation='relu',
+            alpha=0.001,
+            max_iter=300,
+            validation_fraction=0.2,
+            early_stopping=True
+        )
+        
+        # Initialize and train predictor
+        predictor = NFLPredictor(model_config)
+        
+        # Preprocess training data
+        train_processed, feature_cols = predictor.preprocess_data(training_data)
+        X_train = train_processed[feature_cols]
+        y_train = train_processed['Act FPts']
+        
+        # Train model and get metrics
+        metrics = predictor.train(X_train, y_train)
+        logger.info(f"Model metrics: MSE={metrics.mse:.2f}, RMSE={metrics.rmse:.2f}, R2={metrics.r2:.2f}")
+        
+        # Rename test data columns to match training data format
+        column_mapping = {}
+        for col in testing_data.columns:
+            if col not in ['Name', 'Team']:
+                column_mapping[col] = f"{col}_projected"
+        testing_data = testing_data.rename(columns=column_mapping)
+        
+        # Preprocess and predict on test data
+        test_processed, _ = predictor.preprocess_data(testing_data)
+        X_test = test_processed[feature_cols]
+        predictions = predictor.predict(X_test)
+        
+        # Save predictions
+        output_dir = Path('data') / 'ML_projections' / str(end_year)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        predictions_df = pd.DataFrame({
+            'Player': testing_data['Name'],
+            'Projection': testing_data['FPts_projected'],
+            'My Computed Score': predictions
+        })
+        
+        output_file = output_dir / f"{position}_{end_year}_0.csv"
+        predictions_df.to_csv(output_file, index=False)
+        
+        # Save both model and metrics
+        model_dir = Path('data') / 'models' / str(end_year)
+        model_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Save model
+        model_path = model_dir / f"{position}_model.joblib"
+        predictor.save_model(model_path)
+        
+        # Save metrics alongside model
+        metrics_path = model_dir / f"{position}_metrics.json"
+        metrics_dict = {
+            'mse': float(metrics.mse),
+            'rmse': float(metrics.rmse),
+            'r2': float(metrics.r2),
+            'training_date': pd.Timestamp.now().isoformat(),
+            'model_config': model_config.__dict__,
+            'feature_columns': feature_cols
+        }
+        
+        with open(metrics_path, 'w') as f:
+            json.dump(metrics_dict, f, indent=4)
+            
+        logger.info(f"Model and metrics saved to {model_dir}")
         
         logger.info(f"Completed training for {position}")
         
@@ -136,9 +225,11 @@ def main():
     parser.add_argument('--chrome-driver', type=str,
                       default=get_chromedriver_path(),
                       help='Path to ChromeDriver')
+    parser.add_argument('--log-level', type=str, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                      default='INFO', help='Set the logging level')
     args = parser.parse_args()
     
-    setup_logging()
+    setup_logging(args.log_level)
     setup_environment()
     logger = logging.getLogger(__name__)
     
@@ -149,12 +240,16 @@ def main():
     
     # Check if we need to download any data
     need_download = args.force_download
+    missing_data = {}
     if not need_download:
         for position in args.positions:
-            if not data_manager.check_data_exists(args.start_year, args.end_year, position):
+            missing = data_manager.check_data_exists(args.start_year, args.end_year, position)
+            if missing:
                 need_download = True
-                logger.info(f"Missing data for {position} between {args.start_year}-{args.end_year}")
-                break
+                missing_data[position] = missing
+                logger.info(f"Missing data for {position}:")
+                for year, types in missing.items():
+                    logger.info(f"  {year}: {', '.join(types)}")
     
     driver = None
     downloader = None

@@ -79,9 +79,11 @@ class NFLPredictor:
                 if col != 'Name':  # Keep player names as is
                     cleaned_data[col] = pd.Categorical(cleaned_data[col]).codes
             
-            # Identify feature columns (excluding target and metadata)
+            # Identify feature columns (only projected stats, excluding target and metadata)
+            exclude_patterns = ['Name', 'Team', 'Act FPts', 'actual', 'Proj FPts']
             self.feature_columns = [col for col in cleaned_data.columns 
-                                  if col not in ['Name', 'Act FPts', 'Team']]
+                                  if not any(pattern in col for pattern in exclude_patterns)
+                                  and ('projected' in col or not any(suffix in col for suffix in ['_projected', '_actual']))]
             
             self.logger.info(f"Data preprocessed successfully. Features: {self.feature_columns}")
             return cleaned_data, self.feature_columns

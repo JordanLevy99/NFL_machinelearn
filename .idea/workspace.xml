@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="7747166b-46b0-43fa-96f4-32067a99686a" name="Default" comment="" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
+    <list default="true" id="7747166b-46b0-43fa-96f4-32067a99686a" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/fantasy_football_official.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/fantasy_football_official.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NFL_machinelearn/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/NFL_machinelearn/config/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NFL_machinelearn/data/data_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/NFL_machinelearn/data/data_manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NFL_machinelearn/data/downloaders/ff_today_downloader.py" beforeDir="false" afterPath="$PROJECT_DIR$/NFL_machinelearn/data/downloaders/ff_today_downloader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NFL_machinelearn/ml/models/nfl_predictor.py" beforeDir="false" afterPath="$PROJECT_DIR$/NFL_machinelearn/ml/models/nfl_predictor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NFL_machinelearn/ml/models/train_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/NFL_machinelearn/ml/models/train_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NFL_machinelearn/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/NFL_machinelearn/train.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -140,6 +151,21 @@
       <find>test</find>
     </findStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;JordanLevy99&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/JordanLevy99/NFL_machinelearn.git&quot;,
+    &quot;accountId&quot;: &quot;ddf0c14b-95c5-4d1b-994b-cf0aebb7d607&quot;
+  }
+}</component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -169,12 +195,17 @@
       </list>
     </option>
   </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
     <option name="x" value="1600" />
     <option name="y" value="23" />
     <option name="width" value="80" />
     <option name="height" value="22" />
   </component>
+  <component name="ProjectId" id="2qdgkLvg44XCiP0MUb7pz9W0eHj" />
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
       <flattenPackages />
@@ -244,24 +275,21 @@
       <pane id="Scratches" />
     </panes>
   </component>
-  <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
-  <component name="RunManager" selected="Python.train_and_test_Data">
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.train model for RB from 2019-2024.executor": "Debug",
+    "Python.train model for TE from 2019-2024.executor": "Run",
+    "Python.train model for all positions from 2019-2024 (1).executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "#1 on refactored"
+  }
+}]]></component>
+  <component name="RunManager" selected="Python.train model for all positions from 2019-2024 (1)">
     <configuration name="data_Downloader" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="fantasy_football_official" />
       <option name="ENV_FILES" value="" />
@@ -328,6 +356,75 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="train model for RB from 2019-2024" type="PythonConfigurationType" factoryName="Python">
+      <module name="fantasy_football_official" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (NFL_machinelearn)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/NFL_machinelearn/train.py" />
+      <option name="PARAMETERS" value="--log-level DEBUG --start-year 2019 --end-year 2024 --positions RB" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="train model for TE from 2019-2024" type="PythonConfigurationType" factoryName="Python">
+      <module name="fantasy_football_official" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (NFL_machinelearn)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/NFL_machinelearn/train.py" />
+      <option name="PARAMETERS" value="--log-level DEBUG --start-year 2019 --end-year 2024 --positions TE" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="train model for all positions from 2019-2024 (1)" type="PythonConfigurationType" factoryName="Python">
+      <module name="fantasy_football_official" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (NFL_machinelearn)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/NFL_machinelearn/train.py" />
+      <option name="PARAMETERS" value="--log-level DEBUG --start-year 2019 --end-year 2024" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="train_and_test_Data" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="fantasy_football_official" />
       <option name="ENV_FILES" value="" />
@@ -367,6 +464,9 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.train model for TE from 2019-2024" />
+      <item itemvalue="Python.train model for all positions from 2019-2024 (1)" />
+      <item itemvalue="Python.train model for RB from 2019-2024" />
       <item itemvalue="Python.data_Downloader" />
       <item itemvalue="Python.data_downloader_Actual" />
       <item itemvalue="Python.train_and_test_Data" />
@@ -383,11 +483,25 @@
       </list>
     </recent_temporary>
   </component>
-  <component name="ShelveChangesManager" show_recycled="false">
-    <option name="remove_strategy" value="false" />
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-d7ad00fb9fc3-c546a90a8094-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-242.23726.102" />
+      </set>
+    </attachedChunks>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <created>1734998008230</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1734998008230</updated>
+    </task>
+    <servers />
   </component>
   <component name="TestHistory">
     <history-entry file="Nosetests_in_data_test_downloader_py - 2018.08.26 at 14h 48m 45s.xml">
@@ -445,9 +559,59 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="2" />
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/NFL_machinelearn/data/downloaders/ff_today_downloader.py</url>
+          <line>59</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/NFL_machinelearn/data/downloaders/ff_today_downloader.py</url>
+          <line>67</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/NFL_machinelearn/data/downloaders/ff_today_downloader.py</url>
+          <line>49</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/NFL_machinelearn/data/downloaders/ff_today_downloader.py</url>
+          <line>65</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/NFL_machinelearn/data/downloaders/ff_today_downloader.py</url>
+          <line>69</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/NFL_machinelearn/data/downloaders/ff_today_downloader.py</url>
+          <line>61</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/NFL_machinelearn/data/downloaders/ff_today_downloader.py</url>
+          <line>52</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/NFL_machinelearn/data/downloaders/ff_today_downloader.py</url>
+          <line>57</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/NFL_machinelearn/data/downloaders/ff_today_downloader.py</url>
+          <line>88</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/NFL_machinelearn/data/downloaders/ff_today_downloader.py</url>
+          <line>91</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+      </breakpoints>
     </breakpoint-manager>
-    <watches-manager />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Data/2010/WR/WR_projected.csv" />

@@ -49,24 +49,34 @@ class DataManager:
         """
         return self.raw_data_dir / str(year) / f"{position}_{data_type}.csv"
         
-    def check_data_exists(self, start_year: int, end_year: int, position: str) -> bool:
-        """Check if data exists for a given year range and position.
+    def check_data_exists(self, start_year: int, end_year: int, position: str) -> Dict[int, List[str]]:
+        """Check if data exists for a given position and year range.
         
         Args:
-            start_year: Start year (inclusive)
-            end_year: End year (inclusive)
-            position: Player position
+            start_year: Start year for data range
+            end_year: End year for data range (inclusive)
+            position: Player position (QB, RB, WR, TE)
             
         Returns:
-            True if all required data exists, False otherwise
+            Dictionary mapping years to list of missing data types ('projected' or 'actual')
         """
+        missing_files = {}
+        
         for year in range(start_year, end_year + 1):
-            projected_path = self.get_data_path(year, position, "projected")
-            actual_path = self.get_data_path(year, position, "actual")
+            year_missing = []
             
-            if not (projected_path.exists() and actual_path.exists()):
-                return False
-        return True
+            # Check projected data
+            if not (self.raw_data_dir / str(year) / f"{position}_projected.csv").exists():
+                year_missing.append('projected')
+                
+            # Check actual data
+            if not (self.raw_data_dir / str(year) / f"{position}_actual.csv").exists():
+                year_missing.append('actual')
+                
+            if year_missing:
+                missing_files[year] = year_missing
+                
+        return missing_files
     
     def load_position_data(self, year: int, position: str, data_type: str) -> pd.DataFrame:
         """Load data for a specific position and year.

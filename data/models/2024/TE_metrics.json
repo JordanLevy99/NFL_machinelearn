@@ -1,0 +1,22 @@
+{
+    "mse": 0.6285670192873385,
+    "rmse": 0.792822186424761,
+    "r2": 0.35906772787422203,
+    "training_date": "2024-12-24T01:37:36.760392",
+    "model_config": {
+        "hidden_layers": [
+            100
+        ],
+        "activation": "relu",
+        "alpha": 0.001,
+        "max_iter": 300,
+        "validation_fraction": 0.2,
+        "early_stopping": true
+    },
+    "feature_columns": [
+        "Rec_projected",
+        "Rec Yds_projected",
+        "Rec TDs_projected",
+        "FPts_projected"
+    ]
+}
