@@ -54,7 +54,13 @@ class FFTodayDownloader(BaseDownloader):
             df = df[~df.iloc[:, 1].isna()]  # Remove rows where first column is NaN
             df = df[df.iloc[:, 0] != 'Chg']  # Remove header row
             if data_type == 'projected':
-                df = df.drop(columns=[0])  # Drop first column
+                # Some weekly tables already use header rows and do not have a numeric 0 column
+                try:
+                    if 0 in df.columns:
+                        df = df.drop(columns=[0])  # Drop first column when present
+                except Exception:
+                    # Keep going; weekly pages may not include unnamed first column
+                    pass
             # map column based on config
             if data_type == 'actual':
                 df.columns = df.iloc[0]
@@ -341,7 +347,7 @@ class FFTodayDownloader(BaseDownloader):
 
             from io import StringIO
             # Use header row so pandas assigns proper column names for weekly pages
-            dfs = pd.read_html(StringIO(str(table)), header=1)
+                dfs = pd.read_html(StringIO(str(table)), header=1)
             if not dfs:
                 return None
             df = dfs[0]
@@ -390,7 +396,19 @@ class FFTodayDownloader(BaseDownloader):
                     return None
             else:
                 # Reuse existing processor with 'projected' mapping
-                df = self._process_table(df, position, 'projected', year)
+                processed = self._process_table(df, position, 'projected', year)
+                # If processor failed due to weekly quirks, try a light rename map before giving up
+                if processed is None or processed.empty:
+                    rename_map = {
+                        'Player': 'Name', 'TEAM': 'Team', 'Team': 'Team',
+                        'REC': 'Rec', 'Recs': 'Rec', 'Rec.': 'Rec',
+                        'YDS': 'Rec Yds', 'Yds': 'Rec Yds', 'REC YDS': 'Rec Yds', 'Rec Yds': 'Rec Yds',
+                        'TD': 'Rec TDs', 'TDS': 'Rec TDs', 'Rec TD': 'Rec TDs', 'Rec TDs': 'Rec TDs',
+                        'FPTS': 'FPts', 'FPTs': 'FPts', 'Fpts': 'FPts', 'FPts': 'FPts',
+                    }
+                    df2 = df.rename(columns={c: rename_map.get(str(c), c) for c in df.columns})
+                    processed = self._process_table(df2, position, 'projected', year)
+                df = processed
             if df.empty:
                 return None
             return df.to_dict('records')
